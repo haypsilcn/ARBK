@@ -1,0 +1,32 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m328pdef.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\Debug\Praktikum01.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Praktikum01.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Praktikum01.map</FILE>
+  <FILE>Praktikum01.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <start><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>15</LINE></start>
+  <left_shift><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>28</LINE></left_shift>
+  <delay><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>59</LINE></delay>
+  <portB_shift><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>41</LINE></portB_shift>
+  <right_shift><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>51</LINE></right_shift>
+  <L1><FILE>C:\Users\haypsilcn\Documents\Atmel Studio\Praktikum01\Praktikum01\main.asm</FILE><LINE>64</LINE></L1>
+ </LABELS>
+</ASSEMBLER_INFO>
