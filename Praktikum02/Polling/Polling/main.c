@@ -1,7 +1,7 @@
 /*
- * Praktikum02.c
+ * Polling.c
  *
- * Created: 16/11/2021 18:44:59
+ * Created: 17/11/2021 04:55:34
  * Author : haypsilcn
  */ 
 

@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>Praktikum02</AssemblyName>
-    <Name>Praktikum02</Name>
-    <RootNamespace>Praktikum02</RootNamespace>
+    <AssemblyName>Polling</AssemblyName>
+    <Name>Polling</Name>
+    <RootNamespace>Polling</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
