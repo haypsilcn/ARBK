@@ -13,8 +13,8 @@
 #define LED00 PIND0
 #define LED09 PIND1
 
-#define BUTTON01 PINB0
-#define BUTTON02 PINB1
+#define SWITCH01 PINB0
+#define SWITCH02 PINB1
 
 int on = LED00;
 int off = LED09;
@@ -29,9 +29,9 @@ void initPorts() {
 }
 
 void pressButton() {
-	if ( !(PINB & (1 << BUTTON01)) ) {
+	if ( !(PINB & (1 << SWITCH01)) ) {
 		_delay_ms(5);
-		if ( !(PINB & (1 << BUTTON01)) ) {				// SW1 is pressed
+		if ( !(PINB & (1 << SWITCH01)) ) {				// SW1 is pressed
 			if (PIND & (1 << LED00)) {					// if D0 is on
 				blink ^= (1 << 0);						// toggle D0 from blinking to steady light or vice versa
 			} else if (PIND & (1 << LED09)) {			// if D9 is on then switch to D0
@@ -41,9 +41,9 @@ void pressButton() {
 		}
 	}
 	
-	if ( !(PINB & (1 << BUTTON02)) ) {
+	if ( !(PINB & (1 << SWITCH02)) ) {
 		_delay_ms(5);
-		if ( !(PINB & (1 << BUTTON02))) {				// SW2 is pressed
+		if ( !(PINB & (1 << SWITCH02))) {				// SW2 is pressed
 			if (PIND & (1 << LED09)) {					// if D9 is on
 				blink ^= (1 << 0);						// toggle D9 from blinking to steady light or vice versa
 			} else if ( (PIND & (1 << LED00))) {		// if D0 is on then switch to D9
