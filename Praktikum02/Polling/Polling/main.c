@@ -6,7 +6,7 @@
  */ 
 
 #include <avr/io.h>
-#define F_CPU 16000000
+#define F_CPU 16000000UL
 #include <util/delay.h>
 #include <stdbool.h>								// boolean type and values
 
@@ -20,8 +20,8 @@ int on = LED00;
 int off = LED09;
 bool blink = true;
 
-void initPorts() {
-	DDRD = 0xff;										// Data direction register D (D0 & D9) as output
+void setupPorts() {
+	DDRD = 0xff;										// Data direction register D (D0 & D1) as output
 	PORTD = 0x00;		
 	
 	DDRB = 0x00;										// Data direction register B (B0 & B1) as input
@@ -57,7 +57,7 @@ void pressButton() {
 int main(void)
 {
     /* Replace with your application code */
-	initPorts();
+	setupPorts();
     while (1) 
     {
 		pressButton();
