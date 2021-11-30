@@ -26,7 +26,7 @@ void setupPorts() {
 	
 	DDRD = 0x00;											// Data direction register D (D0 & D1) as input
 	PORTD |= (1 << SWITCH01) | (1 << SWITCH02);				// setting bit for switch
-	cli();													// clear global interrupt flag: interrupts will be immediately disabled
+	//cli();													// clear global interrupt flag: interrupts will be immediately disabled
 	EICRA |= (1 << ISC11) | (1 << ISC01);					// the falling edge of INT1 or INT0 generates an interrupt request.
 	EIMSK = (1 << INT0) | (1 << INT1);						// enable external interrupt request
 	sei();													// set global interrupt enable
