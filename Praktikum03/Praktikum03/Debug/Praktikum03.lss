@@ -3,31 +3,31 @@ Praktikum03.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000001d4  2**0
+  0 .data         00000000  00800100  00800100  000001fa  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000160  00000000  00000000  00000074  2**1
+  1 .text         00000186  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000004  00800100  00800100  000001d4  2**0
+  2 .bss          00000004  00800100  00800100  000001fa  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000001d4  2**0
+  3 .comment      00000030  00000000  00000000  000001fa  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000204  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  0000022c  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000040  00000000  00000000  00000244  2**0
+  5 .debug_aranges 00000040  00000000  00000000  0000026c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000078e  00000000  00000000  00000284  2**0
+  6 .debug_info   00000785  00000000  00000000  000002ac  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000006c1  00000000  00000000  00000a12  2**0
+  7 .debug_abbrev 000006a7  00000000  00000000  00000a31  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000027c  00000000  00000000  000010d3  2**0
+  8 .debug_line   00000284  00000000  00000000  000010d8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000090  00000000  00000000  00001350  2**2
+  9 .debug_frame  0000009c  00000000  00000000  0000135c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000390  00000000  00000000  000013e0  2**0
+ 10 .debug_str    00000391  00000000  00000000  000013f8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000092  00000000  00000000  00001770  2**0
+ 11 .debug_loc    000000df  00000000  00000000  00001789  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000030  00000000  00000000  00001802  2**0
+ 12 .debug_ranges 00000030  00000000  00000000  00001868  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -81,30 +81,38 @@ Disassembly of section .text:
   7e:	a4 30       	cpi	r26, 0x04	; 4
   80:	b2 07       	cpc	r27, r18
   82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
-  84:	0e 94 9b 00 	call	0x136	; 0x136 <main>
-  88:	0c 94 ae 00 	jmp	0x15c	; 0x15c <_exit>
+  84:	0e 94 ae 00 	call	0x15c	; 0x15c <main>
+  88:	0c 94 c1 00 	jmp	0x182	; 0x182 <_exit>
 
 0000008c <__bad_interrupt>:
   8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 00000090 <setUp_Timer0>:
-	PORTD ^= (1 << LED);					// toggling LED
-}
+#define LED PIND0
 
-void waitUntil(uint32_t ms) {
-	//while (currentTimer <= ms);
-	PORTD |= (1 << LED);		 			// setting bit for LED
+volatile uint32_t systemClk = 0;
+
+void setUp_Timer0() {
+	TCCR0A = (1 << WGM01);					// enable CTC mode of Timer/Counter 0 Control Register A
   90:	92 e0       	ldi	r25, 0x02	; 2
   92:	94 bd       	out	0x24, r25	; 36
+	TCCR0B |= (1 << CS01) | (1 << CS00);	// set Prescaler 64 
   94:	85 b5       	in	r24, 0x25	; 37
   96:	83 60       	ori	r24, 0x03	; 3
   98:	85 bd       	out	0x25, r24	; 37
+	OCR0A = 249;							// set up Output Comparison Register A for Timer0 to generate an interrupt when timer counter and OCR0A are equals
   9a:	89 ef       	ldi	r24, 0xF9	; 249
   9c:	87 bd       	out	0x27, r24	; 39
+											// F_TimerInterrupt = F_clk / ( (prescaler) x (OCR + 1) )
+											// => OCR = F_clk / (F_TimerInterrupt x prescaler) - 1 = 16MHz/(1000Hz x 64) - 1 = 249
+	TIMSK0 = (1 << OCIE0A);					// enable interrupt
   9e:	90 93 6e 00 	sts	0x006E, r25	; 0x80006e <__TEXT_REGION_LENGTH__+0x7e006e>
   a2:	08 95       	ret
 
 000000a4 <__vector_14>:
+}
+
+ISR(TIMER0_COMPA_vect) {
   a4:	1f 92       	push	r1
   a6:	0f 92       	push	r0
   a8:	0f b6       	in	r0, 0x3f	; 63
@@ -114,6 +122,7 @@ void waitUntil(uint32_t ms) {
   b0:	9f 93       	push	r25
   b2:	af 93       	push	r26
   b4:	bf 93       	push	r27
+	systemClk++;
   b6:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <_edata>
   ba:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <_edata+0x1>
   be:	a0 91 02 01 	lds	r26, 0x0102	; 0x800102 <_edata+0x2>
@@ -125,6 +134,7 @@ void waitUntil(uint32_t ms) {
   d0:	90 93 01 01 	sts	0x0101, r25	; 0x800101 <_edata+0x1>
   d4:	a0 93 02 01 	sts	0x0102, r26	; 0x800102 <_edata+0x2>
   d8:	b0 93 03 01 	sts	0x0103, r27	; 0x800103 <_edata+0x3>
+}
   dc:	bf 91       	pop	r27
   de:	af 91       	pop	r26
   e0:	9f 91       	pop	r25
@@ -136,69 +146,101 @@ void waitUntil(uint32_t ms) {
   ec:	18 95       	reti
 
 000000ee <waitFor>:
+
+void waitFor(uint32_t ms) {
   ee:	0f 93       	push	r16
   f0:	1f 93       	push	r17
+	uint32_t currentTime = systemClk + ms;
   f2:	00 91 00 01 	lds	r16, 0x0100	; 0x800100 <_edata>
   f6:	10 91 01 01 	lds	r17, 0x0101	; 0x800101 <_edata+0x1>
   fa:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <_edata+0x2>
   fe:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <_edata+0x3>
- 102:	ab 01       	movw	r20, r22
- 104:	bc 01       	movw	r22, r24
- 106:	40 0f       	add	r20, r16
- 108:	51 1f       	adc	r21, r17
- 10a:	62 1f       	adc	r22, r18
- 10c:	73 1f       	adc	r23, r19
- 10e:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <_edata>
- 112:	90 91 01 01 	lds	r25, 0x0101	; 0x800101 <_edata+0x1>
- 116:	a0 91 02 01 	lds	r26, 0x0102	; 0x800102 <_edata+0x2>
- 11a:	b0 91 03 01 	lds	r27, 0x0103	; 0x800103 <_edata+0x3>
- 11e:	84 17       	cp	r24, r20
- 120:	95 07       	cpc	r25, r21
- 122:	a6 07       	cpc	r26, r22
- 124:	b7 07       	cpc	r27, r23
+ 102:	dc 01       	movw	r26, r24
+ 104:	cb 01       	movw	r24, r22
+ 106:	80 0f       	add	r24, r16
+ 108:	91 1f       	adc	r25, r17
+ 10a:	a2 1f       	adc	r26, r18
+ 10c:	b3 1f       	adc	r27, r19
+	while (systemClk < currentTime) {
+ 10e:	00 91 00 01 	lds	r16, 0x0100	; 0x800100 <_edata>
+ 112:	10 91 01 01 	lds	r17, 0x0101	; 0x800101 <_edata+0x1>
+ 116:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <_edata+0x2>
+ 11a:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <_edata+0x3>
+ 11e:	08 17       	cp	r16, r24
+ 120:	19 07       	cpc	r17, r25
+ 122:	2a 07       	cpc	r18, r26
+ 124:	3b 07       	cpc	r19, r27
  126:	98 f3       	brcs	.-26     	; 0x10e <waitFor+0x20>
+		continue;
+	} 
+	PORTD ^= (1 << LED);					// toggling LED
  128:	9b b1       	in	r25, 0x0b	; 11
  12a:	81 e0       	ldi	r24, 0x01	; 1
  12c:	89 27       	eor	r24, r25
  12e:	8b b9       	out	0x0b, r24	; 11
+}
  130:	1f 91       	pop	r17
  132:	0f 91       	pop	r16
  134:	08 95       	ret
 
-00000136 <main>:
+00000136 <waitUntil>:
+
+void waitUntil(uint32_t ms) {
+ 136:	0f 93       	push	r16
+ 138:	1f 93       	push	r17
+	while (systemClk <= ms) {
+ 13a:	00 91 00 01 	lds	r16, 0x0100	; 0x800100 <_edata>
+ 13e:	10 91 01 01 	lds	r17, 0x0101	; 0x800101 <_edata+0x1>
+ 142:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <_edata+0x2>
+ 146:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <_edata+0x3>
+ 14a:	60 17       	cp	r22, r16
+ 14c:	71 07       	cpc	r23, r17
+ 14e:	82 07       	cpc	r24, r18
+ 150:	93 07       	cpc	r25, r19
+ 152:	98 f7       	brcc	.-26     	; 0x13a <waitUntil+0x4>
+		continue;
+	}
+	PORTD |= (1 << LED);		 			// setting bit for LED
+ 154:	58 9a       	sbi	0x0b, 0	; 11
+}
+ 156:	1f 91       	pop	r17
+ 158:	0f 91       	pop	r16
+ 15a:	08 95       	ret
+
+0000015c <main>:
 
 int main(void)
 {
     /* Replace with your application code */
 	
 	DDRD = 0xff;							// Data direction register D (D0) as output
- 136:	8f ef       	ldi	r24, 0xFF	; 255
- 138:	8a b9       	out	0x0a, r24	; 10
+ 15c:	8f ef       	ldi	r24, 0xFF	; 255
+ 15e:	8a b9       	out	0x0a, r24	; 10
 	PORTD = 0x00;
- 13a:	1b b8       	out	0x0b, r1	; 11
+ 160:	1b b8       	out	0x0b, r1	; 11
 	setUp_Timer0();
- 13c:	0e 94 48 00 	call	0x90	; 0x90 <setUp_Timer0>
+ 162:	0e 94 48 00 	call	0x90	; 0x90 <setUp_Timer0>
 	sei();									// set global interrupt enable
- 140:	78 94       	sei
+ 166:	78 94       	sei
 	
-	waitFor(5000);							// wait for 5s from the beginning then turn on LED
- 142:	68 e8       	ldi	r22, 0x88	; 136
- 144:	73 e1       	ldi	r23, 0x13	; 19
- 146:	80 e0       	ldi	r24, 0x00	; 0
- 148:	90 e0       	ldi	r25, 0x00	; 0
- 14a:	0e 94 77 00 	call	0xee	; 0xee <waitFor>
+	waitUntil(5000);							// wait for 5s from the beginning then turn on LED
+ 168:	68 e8       	ldi	r22, 0x88	; 136
+ 16a:	73 e1       	ldi	r23, 0x13	; 19
+ 16c:	80 e0       	ldi	r24, 0x00	; 0
+ 16e:	90 e0       	ldi	r25, 0x00	; 0
+ 170:	0e 94 9b 00 	call	0x136	; 0x136 <waitUntil>
     while (1) 
     {
 		waitFor(200);						// wait for 0.2s then toggle LED
- 14e:	68 ec       	ldi	r22, 0xC8	; 200
- 150:	70 e0       	ldi	r23, 0x00	; 0
- 152:	80 e0       	ldi	r24, 0x00	; 0
- 154:	90 e0       	ldi	r25, 0x00	; 0
- 156:	0e 94 77 00 	call	0xee	; 0xee <waitFor>
- 15a:	f9 cf       	rjmp	.-14     	; 0x14e <main+0x18>
+ 174:	68 ec       	ldi	r22, 0xC8	; 200
+ 176:	70 e0       	ldi	r23, 0x00	; 0
+ 178:	80 e0       	ldi	r24, 0x00	; 0
+ 17a:	90 e0       	ldi	r25, 0x00	; 0
+ 17c:	0e 94 77 00 	call	0xee	; 0xee <waitFor>
+ 180:	f9 cf       	rjmp	.-14     	; 0x174 <main+0x18>
 
-0000015c <_exit>:
- 15c:	f8 94       	cli
+00000182 <_exit>:
+ 182:	f8 94       	cli
 
-0000015e <__stop_program>:
- 15e:	ff cf       	rjmp	.-2      	; 0x15e <__stop_program>
+00000184 <__stop_program>:
+ 184:	ff cf       	rjmp	.-2      	; 0x184 <__stop_program>

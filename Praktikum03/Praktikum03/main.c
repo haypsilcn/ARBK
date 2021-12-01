@@ -19,7 +19,7 @@ void setUp_Timer0() {
 	TCCR0B |= (1 << CS01) | (1 << CS00);	// set Prescaler 64 
 	OCR0A = 249;							// set up Output Comparison Register A for Timer0 to generate an interrupt when timer counter and OCR0A are equals
 											// F_TimerInterrupt = F_clk / ( (prescaler) x (OCR + 1) )
-											// => OCR = F_clk / (F_TimerInterrupt x prescaler) - 1 = 16MHz/(1000Hz x 64) - 1 = 249
+											// => OCR = F_clk / (F_TimerInterrupt x prescaler) - 1 = ( 16MHz/(1000Hz x 64) ) - 1 = 249
 	TIMSK0 = (1 << OCIE0A);					// enable interrupt
 }
 
@@ -29,12 +29,16 @@ ISR(TIMER0_COMPA_vect) {
 
 void waitFor(uint32_t ms) {
 	uint32_t currentTime = systemClk + ms;
-	while (systemClk < currentTime); 
+	while (systemClk < currentTime) {
+		continue;
+	} 
 	PORTD ^= (1 << LED);					// toggling LED
 }
 
 void waitUntil(uint32_t ms) {
-	while (systemClk <= ms);
+	while (systemClk <= ms) {
+		continue;
+	}
 	PORTD |= (1 << LED);		 			// setting bit for LED
 }
 
@@ -47,7 +51,7 @@ int main(void)
 	setUp_Timer0();
 	sei();									// set global interrupt enable
 	
-	waitFor(5000);							// wait for 5s from the beginning then turn on LED
+	waitUntil(5000);						// wait until 5s from the beginning then turn on LED
     while (1) 
     {
 		waitFor(200);						// wait for 0.2s then toggle LED
