@@ -29,17 +29,11 @@ ISR(TIMER0_COMPA_vect) {
 
 void waitFor(uint32_t ms) {
 	uint32_t currentTime = systemClk + ms;
-	while (systemClk < currentTime) {
-		continue;
-	} 
-	PORTD ^= (1 << LED);					// toggling LED
+	while (systemClk < currentTime) {} 		
 }
 
 void waitUntil(uint32_t ms) {
-	while (systemClk <= ms) {
-		continue;
-	}
-	PORTD |= (1 << LED);		 			// setting bit for LED
+	while (systemClk <= ms) {}
 }
 
 int main(void)
@@ -52,9 +46,11 @@ int main(void)
 	sei();									// set global interrupt enable
 	
 	waitUntil(5000);						// wait until 5s from the beginning then turn on LED
+	PORTD |= (1 << LED);					// setting bit for LED
     while (1) 
     {
 		waitFor(200);						// wait for 0.2s then toggle LED
+		PORTD ^= (1 << LED);				// toggling LED
     }
 }
 
