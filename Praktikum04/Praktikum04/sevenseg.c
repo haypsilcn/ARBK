@@ -6,8 +6,10 @@
  */ 
 
 #include "sevenseg.h"
-void display(int num, int numList[]){
+void display(int num, int numList[]) {
+
 	PORTD = numList[num];
 	_delay_ms(10);
-	PORTB ^= (1<<PINB0);
+	PORTB ^= (1 << PINB0);
+
 }
